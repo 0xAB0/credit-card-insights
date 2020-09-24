@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <Container>
       <Typography variant="h4" gutterBottom>
-        Overview
+        XRay
       </Typography>
     </Container>
   );
