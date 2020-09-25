@@ -30,6 +30,36 @@ const useStyles = makeStyles((theme) => ({
 
 const data = [
   {
+    name: "Sep",
+    income: 3000,
+    expense: 1398,
+  },
+  {
+    name: "Oct",
+    income: 2390,
+    expense: 3800,
+  },
+  {
+    name: "Dec",
+    income: 3000,
+    expense: 1398,
+  },
+  {
+    name: "Jan",
+    income: 3490,
+    expense: 4300,
+  },
+  {
+    name: "Feb",
+    income: 2780,
+    expense: 3908,
+  },
+  {
+    name: "Mar",
+    income: 4000,
+    expense: 2400,
+  },
+  {
     name: "Apr",
     income: 3000,
     expense: 1398,
@@ -92,7 +122,7 @@ export default function Home() {
         <LineChart
           width={730}
           height={300}
-          data={data}
+          data={time === "6mn" ? data.slice(6) : data}
           margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
