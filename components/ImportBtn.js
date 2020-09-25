@@ -36,7 +36,7 @@ const ImportBtn = () => {
           </label>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="textSecondary">
+          <Button onClick={handleClose} color="default">
             Cancel
           </Button>
           <Button onClick={handleUpload} color="primary">

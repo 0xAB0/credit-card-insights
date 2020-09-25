@@ -16,6 +16,15 @@ const theme = createMuiTheme({
       default: "#fafafa",
     },
   },
+  overrides: {
+    MuiTableRow: {
+      root: {
+        "&$selected, &$selected:hover": {
+          backgroundColor: "#e3f2fd",
+        },
+      },
+    },
+  },
 });
 
 export default theme;
