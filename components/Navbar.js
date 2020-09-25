@@ -5,6 +5,8 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 
+import ImportBtn from "./ImportBtn";
+
 const useStyles = makeStyles(() => ({
   title: {
     flexGrow: 1,
@@ -29,11 +31,7 @@ const Navbar = () => {
           <Button>XRay</Button>
         </Link>
 
-        <Link href="/import" passHref>
-          <Button variant="outlined" color="primary">
-            Import
-          </Button>
-        </Link>
+        <ImportBtn />
       </Toolbar>
     </AppBar>
   );
