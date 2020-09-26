@@ -15,14 +15,14 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 
-function createData(date, description, amount, category) {
-  return { date, description, amount, category };
+function createData(id, date, description, amount, category) {
+  return { id, date, description, amount, category };
 }
 
-const rows = [
-  createData("2020-08-01", "supermarket", "$13.23", "grocery"),
-  createData("2020-08-07", "bus", "$3.00", "transit"),
-  createData("2020-08-10", "coffee", "$5.00", "food & drink"),
+const data = [
+  createData(1, "2020-08-01", "supermarket", "$13.23", "grocery"),
+  createData(2, "2020-08-07", "bus", "$3.00", "transit"),
+  createData(3, "2020-08-10", "coffee", "$5.00", "food & drink"),
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Import() {
   const classes = useStyles();
+  const [rows, setRows] = React.useState(data);
   const [selected, setSelected] = React.useState([]);
 
   const handleSelectAllClick = (event) => {
@@ -71,7 +72,25 @@ export default function Import() {
 
   const isSelected = (row) => selected.indexOf(row) !== -1;
 
-  const handleCategoryChange = () => {};
+  const handleCategoryChange = (event, rowId) => {
+    setRows(
+      rows.map((item) =>
+        item.id === rowId ? { ...item, category: event.target.value } : item
+      )
+    );
+  };
+
+  React.useEffect(() => {
+    const rowsId = rows.map((row) => row.id);
+
+    setSelected(
+      selected.map((selectedItem) =>
+        rowsId.includes(selectedItem.id)
+          ? rows.find((row) => row.id === selectedItem.id)
+          : selectedItem
+      )
+    );
+  }, [rows]);
 
   return (
     <Container className={classes.root}>
@@ -108,7 +127,6 @@ export default function Import() {
                 <TableRow
                   key={index}
                   hover
-                  onClick={(event) => handleClick(event, row)}
                   role="checkbox"
                   aria-checked={isItemSelected}
                   tabIndex={-1}
@@ -119,6 +137,7 @@ export default function Import() {
                       color="primary"
                       checked={isItemSelected}
                       inputProps={{ "aria-labelledby": labelId }}
+                      onChange={(event) => handleClick(event, row)}
                     />
                   </TableCell>
                   <TableCell
@@ -138,7 +157,9 @@ export default function Import() {
                     >
                       <Select
                         value={row.category}
-                        onChange={handleCategoryChange}
+                        onChange={(event) =>
+                          handleCategoryChange(event, row.id)
+                        }
                       >
                         <MenuItem value="grocery">grocery</MenuItem>
                         <MenuItem value="transit">transit</MenuItem>
