@@ -15,15 +15,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 
-function createData(id, date, description, amount, category) {
-  return { id, date, description, amount, category };
-}
-
-const data = [
-  createData(1, "2020-08-01", "supermarket", "$13.23", "grocery"),
-  createData(2, "2020-08-07", "bus", "$3.00", "transit"),
-  createData(3, "2020-08-10", "coffee", "$5.00", "food & drink"),
-];
+import { tableData } from "../sampleData";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Import() {
   const classes = useStyles();
-  const [rows, setRows] = React.useState(data);
+  const [rows, setRows] = React.useState(tableData);
   const [selected, setSelected] = React.useState([]);
 
   const handleSelectAllClick = (event) => {

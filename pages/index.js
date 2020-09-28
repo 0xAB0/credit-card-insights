@@ -16,6 +16,8 @@ import {
   Line,
 } from "recharts";
 
+import { graphData } from "../sampleData";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: theme.spacing(1),
@@ -27,69 +29,6 @@ const useStyles = makeStyles((theme) => ({
     width: 200,
   },
 }));
-
-const data = [
-  {
-    name: "Sep",
-    income: 3000,
-    expense: 1398,
-  },
-  {
-    name: "Oct",
-    income: 2390,
-    expense: 3800,
-  },
-  {
-    name: "Dec",
-    income: 3000,
-    expense: 1398,
-  },
-  {
-    name: "Jan",
-    income: 3490,
-    expense: 4300,
-  },
-  {
-    name: "Feb",
-    income: 2780,
-    expense: 3908,
-  },
-  {
-    name: "Mar",
-    income: 4000,
-    expense: 2400,
-  },
-  {
-    name: "Apr",
-    income: 3000,
-    expense: 1398,
-  },
-  {
-    name: "May",
-    income: 2000,
-    expense: 9800,
-  },
-  {
-    name: "Jun",
-    income: 2780,
-    expense: 3908,
-  },
-  {
-    name: "Jul",
-    income: 1890,
-    expense: 4800,
-  },
-  {
-    name: "Aug",
-    income: 2390,
-    expense: 3800,
-  },
-  {
-    name: "Sep",
-    income: 3490,
-    expense: 4300,
-  },
-];
 
 export default function Home() {
   const classes = useStyles();
@@ -122,7 +61,7 @@ export default function Home() {
         <LineChart
           width={730}
           height={300}
-          data={time === "6mn" ? data.slice(6) : data}
+          data={time === "6mn" ? graphData.slice(6) : graphData}
           margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
@@ -130,8 +69,8 @@ export default function Home() {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="expense" stroke="#FC8181" />
-          <Line type="monotone" dataKey="income" stroke="#68D391" />
+          <Line type="monotone" dataKey="expense" stroke="#8884d8" />
+          <Line type="monotone" dataKey="income" stroke="#82ca9d" />
         </LineChart>
       </Box>
     </Container>

@@ -24,6 +24,11 @@ const theme = createMuiTheme({
         },
       },
     },
+    MuiTableHead: {
+      root: {
+        backgroundColor: "#f5f5f5",
+      },
+    },
   },
 });
 
