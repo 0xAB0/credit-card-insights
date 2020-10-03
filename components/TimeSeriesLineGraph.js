@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "react-query";
 import axios from "axios";
 import {
   LineChart,
@@ -10,63 +10,59 @@ import {
   Line,
 } from "recharts";
 
-const TimeSeriesLineGraph = ({ statement }) => {
-  const [data, setData] = useState([]);
+const fetchStatementData = async (statement) => {
+  const res = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_URL}/graph/TimeSeries?statement=${statement}`
+  );
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/graph/TimeSeries?statement=${statement}`
-        );
+  const allData = res.data.series[0].dataPoints.map(
+    (point) =>
+      (point = {
+        ...point,
+        timestamp: new Date(point.time).getTime(),
+        all: point.value,
+      })
+  );
+  const paymentData = res.data.series[1].dataPoints.map(
+    (point) =>
+      (point = {
+        ...point,
+        timestamp: new Date(point.time).getTime(),
+        payment: point.value,
+      })
+  );
 
-        const allData = res.data.series[0].dataPoints.map(
-          (point) =>
-            (point = {
-              ...point,
-              timestamp: new Date(point.time).getTime(),
-              all: point.value,
-            })
-        );
-        const paymentData = res.data.series[1].dataPoints.map(
-          (point) =>
-            (point = {
-              ...point,
-              timestamp: new Date(point.time).getTime(),
-              payment: point.value,
-            })
-        );
+  let merged = [];
+  let i = 0;
+  let j = 0;
 
-        let merged = [];
-        let i = 0;
-        let j = 0;
-
-        while (i < allData.length) {
-          while (j < paymentData.length) {
-            if (allData[i].timestamp === paymentData[j].timestamp) {
-              merged.push({ ...allData[i], payment: paymentData[j].payment });
-              i++;
-              j++;
-            } else if (allData[i].timestamp > paymentData[j].timestamp) {
-              merged.push(paymentData[j]);
-              j++;
-            } else {
-              merged.push(allData[i]);
-              i++;
-            }
-          }
-          merged.push(allData[i]);
-          i++;
-        }
-
-        setData(merged);
-      } catch (error) {
-        console.error(error);
+  while (i < allData.length) {
+    while (j < paymentData.length) {
+      if (allData[i].timestamp === paymentData[j].timestamp) {
+        merged.push({ ...allData[i], payment: paymentData[j].payment });
+        i++;
+        j++;
+      } else if (allData[i].timestamp > paymentData[j].timestamp) {
+        merged.push(paymentData[j]);
+        j++;
+      } else {
+        merged.push(allData[i]);
+        i++;
       }
     }
+    merged.push(allData[i]);
+    i++;
+  }
 
-    fetchData();
-  }, []);
+  return merged;
+};
+
+const TimeSeriesLineGraph = ({ statement }) => {
+  const { data, error, isLoading } = useQuery(statement, fetchStatementData);
+
+  if (isLoading) return "Loading...";
+
+  if (error) return "An error has occurred: " + error.message;
 
   return (
     <LineChart
