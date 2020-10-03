@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
@@ -8,15 +6,8 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Box from "@material-ui/core/Box";
-import {
-  LineChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  Line,
-} from "recharts";
+
+import TimeSeriesLineGraph from "../components/TimeSeriesLineGraph";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,25 +23,11 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Home() {
   const classes = useStyles();
-  const [allData, setAllData] = useState([]);
-  const [paymentData, setPaymentData] = useState([]);
-  const [label, setLabel] = useState("all");
+  const [statement, setStatement] = React.useState("July%202020");
 
   const handleChange = (event) => {
-    setLabel(event.target.value);
+    setStatement(event.target.value);
   };
-
-  useEffect(() => {
-    async function fetchData() {
-      const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/graph/TimeSeries?statement=July%202020`
-      );
-      setAllData(res.data.series[0].dataPoints);
-      setPaymentData(res.data.series[1].dataPoints);
-    }
-
-    fetchData();
-  }, []);
 
   return (
     <Container className={classes.root}>
@@ -62,28 +39,15 @@ export default function Home() {
           className={classes.formControl}
           size="small"
         >
-          <InputLabel>Data</InputLabel>
-          <Select value={label} onChange={handleChange} label="Data">
-            <MenuItem value="all">All Data</MenuItem>
-            <MenuItem value="payment">Payment Data</MenuItem>
+          <InputLabel>Statement</InputLabel>
+          <Select value={statement} onChange={handleChange} label="Statement">
+            <MenuItem value="July%202020">July 2020</MenuItem>
           </Select>
         </FormControl>
       </Box>
 
       <Box display="flex" justifyContent="center" className={classes.box}>
-        <LineChart
-          width={730}
-          height={300}
-          data={label === "all" ? allData : paymentData}
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="time" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="value" stroke="#8884d8" />
-        </LineChart>
+        <TimeSeriesLineGraph statement={statement} />
       </Box>
     </Container>
   );
