@@ -10,9 +10,20 @@ import {
   Line,
 } from "recharts";
 
-const fetchStatementData = async (statement) => {
+const fetchTimeSeriesData = async (
+  type,
+  statement,
+  start,
+  end,
+  breakdown,
+  resolution
+) => {
   const res = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/graph/TimeSeries?statement=${statement}`
+    `${process.env.NEXT_PUBLIC_API_URL}/graph/TimeSeries?${
+      type === "date" && end !== ""
+        ? `start=${start}&end=${end}`
+        : `statement=${statement}`
+    }&breakdown=${breakdown}&resolution=${resolution}`
   );
 
   const allData = res.data.series[0].dataPoints.map(
@@ -57,8 +68,13 @@ const fetchStatementData = async (statement) => {
   return merged;
 };
 
-const TimeSeriesLineGraph = ({ statement }) => {
-  const { data, error, isLoading } = useQuery(statement, fetchStatementData);
+const TimeSeriesLineGraph = ({ query }) => {
+  const { type, statement, start, end, breakdown, resolution } = query;
+
+  const { data, error, isLoading } = useQuery(
+    [type, statement, start, end, breakdown, resolution],
+    fetchTimeSeriesData
+  );
 
   if (isLoading) return "Loading...";
 
