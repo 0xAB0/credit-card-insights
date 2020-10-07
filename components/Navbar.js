@@ -27,10 +27,6 @@ const Navbar = () => {
           <Button>Overview</Button>
         </Link>
 
-        <Link href="/xray" passHref>
-          <Button>XRay</Button>
-        </Link>
-
         <ImportBtn />
       </Toolbar>
     </AppBar>

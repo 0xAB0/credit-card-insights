@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
@@ -186,6 +187,20 @@ export default function Home() {
                   <Button type="submit" variant="outlined">
                     Apply
                   </Button>
+                </Grid>
+
+                <Grid item>
+                  <Link
+                    href={{
+                      pathname: "/xray",
+                      query: { type, statement, start, end },
+                    }}
+                    passHref
+                  >
+                    <Button color="primary" variant="contained">
+                      XRay
+                    </Button>
+                  </Link>
                 </Grid>
               </Grid>
             </form>
