@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
@@ -33,7 +34,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function XRay() {
+  const router = useRouter();
   const classes = useStyles();
+
+  const { type, statement, start, end } = router.query;
 
   return (
     <Container>
@@ -44,13 +48,31 @@ export default function XRay() {
       {/* summary */}
       <Grid container spacing={3} justify="space-evenly">
         <Grid item>
-          <TopFiveTable name="frequent" />
+          <TopFiveTable
+            name="category"
+            type={type}
+            statement={statement}
+            start={start}
+            end={end}
+          />
         </Grid>
         <Grid item>
-          <TopFiveTable name="category" />
+          <TopFiveTable
+            name="individual"
+            type={type}
+            statement={statement}
+            start={start}
+            end={end}
+          />
         </Grid>
         <Grid item>
-          <TopFiveTable name="individual" />
+          <TopFiveTable
+            name="frequent"
+            type={type}
+            statement={statement}
+            start={start}
+            end={end}
+          />
         </Grid>
       </Grid>
 
