@@ -1,3 +1,6 @@
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
@@ -30,9 +33,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Import() {
+  const router = useRouter();
   const classes = useStyles();
-  const [rows, setRows] = React.useState(tableData);
-  const [selected, setSelected] = React.useState([]);
+  const [rows, setRows] = useState([]);
+  const [selected, setSelected] = useState([]);
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -72,7 +76,7 @@ export default function Import() {
     );
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const rowsId = rows.map((row) => row.id);
 
     setSelected(
@@ -83,6 +87,18 @@ export default function Import() {
       )
     );
   }, [rows]);
+
+  useEffect(() => {
+    const fetchData = async (id) => {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/import/${id}/data`
+      );
+
+      setRows(res.data.rows);
+    };
+
+    fetchData(router.query.id);
+  }, [router.query]);
 
   return (
     <Container className={classes.root}>
