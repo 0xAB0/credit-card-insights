@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import axios from "axios";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -17,9 +18,29 @@ const ImportBtn = () => {
     setOpen(false);
   };
 
-  const handleUpload = () => {
-    setOpen(false);
-    router.push("/import");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const file = e.target.file.files[0];
+
+    try {
+      const filedata = await axios.post("/api/upload", file);
+
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/import/?name=${file.name}`,
+        filedata.data
+      );
+
+      if (res.data.status === "ok") {
+        setOpen(false);
+        router.push({
+          pathname: "/import",
+          query: { id: res.data.id },
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -30,19 +51,19 @@ const ImportBtn = () => {
 
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Import CSV</DialogTitle>
-        <DialogContent>
-          <label htmlFor="upload-csv-file">
-            <input required type="file" accept=".csv" id="upload-csv-file" />
-          </label>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="default">
-            Cancel
-          </Button>
-          <Button onClick={handleUpload} color="primary">
-            Upload
-          </Button>
-        </DialogActions>
+        <form onSubmit={handleSubmit}>
+          <DialogContent>
+            <input required name="file" type="file" accept=".csv" />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="default">
+              Cancel
+            </Button>
+            <Button type="submit" color="primary">
+              Upload
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
     </>
   );
