@@ -1,5 +1,4 @@
 import { useRouter } from "next/router";
-import axios from "axios";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -18,29 +17,42 @@ const ImportBtn = () => {
     setOpen(false);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     const file = e.target.file.files[0];
 
-    try {
-      const filedata = await axios.post("/api/upload", file);
+    var reader = new FileReader();
 
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/import/?name=${file.name}`,
-        filedata.data
+    reader.readAsText(file);
+
+    reader.onload = async function (evt) {
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/csv",
+        },
+        body: evt.target.result,
+      };
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/import/?name=${file.name.slice(
+          0,
+          -4
+        )}`,
+        options
       );
 
-      if (res.data.status === "ok") {
+      const data = await res.json();
+
+      if (data.status === "ok") {
         setOpen(false);
         router.push({
           pathname: "/import",
-          query: { id: res.data.id },
+          query: { id: data.id },
         });
       }
-    } catch (error) {
-      console.error(error);
-    }
+    };
   };
 
   return (
