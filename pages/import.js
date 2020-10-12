@@ -12,13 +12,14 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import Checkbox from "@material-ui/core/Checkbox";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
+import Autocomplete, {
+  createFilterOptions,
+} from "@material-ui/lab/Autocomplete";
 
-import { tableData } from "../sampleData";
+const filter = createFilterOptions();
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,15 +28,13 @@ const useStyles = makeStyles((theme) => ({
   box: {
     margin: theme.spacing(3, 1),
   },
-  categorySelect: {
-    width: 150,
-  },
 }));
 
 export default function Import() {
   const router = useRouter();
   const classes = useStyles();
   const [rows, setRows] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
   const [selected, setSelected] = useState([]);
 
   const handleSelectAllClick = (event) => {
@@ -68,21 +67,33 @@ export default function Import() {
 
   const isSelected = (row) => selected.indexOf(row) !== -1;
 
-  const handleCategoryChange = (event, rowId) => {
-    setRows(
-      rows.map((item) =>
-        item.id === rowId ? { ...item, category: event.target.value } : item
-      )
-    );
+  const handleCategoryChange = async (event, newValue, rowId) => {
+    if (newValue) {
+      setRows(
+        rows.map((item) =>
+          item.rowId === rowId ? { ...item, category: newValue } : item
+        )
+      );
+
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/import/${router.query.id}/${rowId}/category`,
+        newValue,
+        {
+          headers: {
+            "Content-Type": "text/plain",
+          },
+        }
+      );
+    }
   };
 
   useEffect(() => {
-    const rowsId = rows.map((row) => row.id);
+    const allRowsId = rows.map((row) => row.rowId);
 
     setSelected(
       selected.map((selectedItem) =>
-        rowsId.includes(selectedItem.id)
-          ? rows.find((row) => row.id === selectedItem.id)
+        allRowsId.includes(selectedItem.rowId)
+          ? rows.find((row) => row.rowId === selectedItem.rowId)
           : selectedItem
       )
     );
@@ -93,12 +104,22 @@ export default function Import() {
       const res = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/import/${id}/data`
       );
-
       setRows(res.data.rows);
     };
 
     fetchData(router.query.id);
   }, [router.query]);
+
+  useEffect(() => {
+    const fetchCategoryList = async () => {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/category/list`
+      );
+      setCategoryList(res.data);
+    };
+
+    fetchCategoryList();
+  }, []);
 
   return (
     <Container className={classes.root}>
@@ -127,13 +148,13 @@ export default function Import() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, index) => {
+            {rows.map((row) => {
               const isItemSelected = isSelected(row);
-              const labelId = `enhanced-table-checkbox-${index}`;
+              const labelId = `enhanced-table-checkbox-${row.rowId}`;
 
               return (
                 <TableRow
-                  key={index}
+                  key={row.rowId}
                   hover
                   role="checkbox"
                   aria-checked={isItemSelected}
@@ -159,21 +180,41 @@ export default function Import() {
                   <TableCell>{row.description}</TableCell>
                   <TableCell>{row.amount}</TableCell>
                   <TableCell>
-                    <FormControl
-                      className={classes.categorySelect}
-                      size="small"
-                    >
-                      <Select
-                        value={row.category}
-                        onChange={(event) =>
-                          handleCategoryChange(event, row.id)
+                    <Autocomplete
+                      value={row.category}
+                      onChange={(event, newValue) => {
+                        handleCategoryChange(event, newValue, row.rowId);
+                      }}
+                      filterOptions={(options, params) => {
+                        const filtered = filter(options, params);
+
+                        // Suggest the creation of a new value
+                        if (params.inputValue !== "") {
+                          filtered.push(params.inputValue);
                         }
-                      >
-                        <MenuItem value="grocery">grocery</MenuItem>
-                        <MenuItem value="transit">transit</MenuItem>
-                        <MenuItem value="food & drink">food & drink</MenuItem>
-                      </Select>
-                    </FormControl>
+
+                        return filtered;
+                      }}
+                      selectOnFocus
+                      clearOnBlur
+                      handleHomeEndKeys
+                      options={categoryList}
+                      getOptionLabel={(option) => {
+                        // Value selected with enter, right from the input
+                        if (typeof option === "string") {
+                          return option;
+                        }
+                        // Add "xxx" option created dynamically
+                        if (option.inputValue) {
+                          return option.inputValue;
+                        }
+                        // Regular option
+                        return option.title;
+                      }}
+                      size="small"
+                      freeSolo
+                      renderInput={(params) => <TextField {...params} />}
+                    />
                   </TableCell>
                 </TableRow>
               );
