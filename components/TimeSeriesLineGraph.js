@@ -1,6 +1,7 @@
 import { useQuery } from "react-query";
 import axios from "axios";
 import {
+  ResponsiveContainer,
   LineChart,
   CartesianGrid,
   XAxis,
@@ -64,7 +65,7 @@ const fetchTimeSeriesData = async (
   return { sorted, labels };
 };
 
-const TimeSeriesLineGraph = ({ query }) => {
+const TimeSeriesLineGraph = ({ query, size }) => {
   const { type, statement, start, end, breakdown, resolution } = query;
 
   const { data, error, isLoading } = useQuery(
@@ -78,28 +79,31 @@ const TimeSeriesLineGraph = ({ query }) => {
 
   return (
     !isLoading && (
-      <LineChart
-        width={730}
-        height={300}
-        data={data.sorted}
-        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+      <ResponsiveContainer
+        width={size === "small" ? 700 : "100%"}
+        height={size === "small" ? 300 : "100%"}
       >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="time" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        {data.labels.map((label, index) => (
-          <Line
-            key={index}
-            connectNulls
-            type="monotone"
-            dataKey={label}
-            name={label}
-            stroke={strokeColors[index % strokeColors.length]}
-          />
-        ))}
-      </LineChart>
+        <LineChart
+          data={data.sorted}
+          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="time" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          {data.labels.map((label, index) => (
+            <Line
+              key={index}
+              connectNulls
+              type="monotone"
+              dataKey={label}
+              name={label}
+              stroke={strokeColors[index % strokeColors.length]}
+            />
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
     )
   );
 };

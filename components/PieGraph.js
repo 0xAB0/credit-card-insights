@@ -1,5 +1,22 @@
 import axios from "axios";
-import { PieChart, Pie, Tooltip } from "recharts";
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+  Tooltip,
+} from "recharts";
+
+const colors = [
+  "#7986cb",
+  "#a5d6a7",
+  "#ffc658",
+  "#f48fb1",
+  "#ce93d8",
+  "#80deea",
+  "#bcaaa4",
+];
 
 const PieGraph = ({ type, statement, start, end }) => {
   const [data, setData] = React.useState([]);
@@ -21,19 +38,23 @@ const PieGraph = ({ type, statement, start, end }) => {
   }, []);
 
   return (
-    <PieChart width={500} height={250}>
-      <Pie
-        data={data}
-        dataKey="actualValue"
-        nameKey="label"
-        cx="50%"
-        cy="50%"
-        outerRadius={50}
-        fill="#8884d8"
-        label
-      />
-      <Tooltip />
-    </PieChart>
+    <ResponsiveContainer width={730} height={250}>
+      <PieChart>
+        <Pie
+          data={data}
+          dataKey="actualValue"
+          nameKey="label"
+          fill="#8884d8"
+          label
+        >
+          {data.map((entry, index) => (
+            <Cell key={index} fill={colors[index % colors.length]} />
+          ))}
+        </Pie>
+        <Legend align="right" verticalAlign="middle" layout="vertical" />
+        <Tooltip />
+      </PieChart>
+    </ResponsiveContainer>
   );
 };
 

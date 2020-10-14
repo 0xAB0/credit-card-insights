@@ -99,6 +99,7 @@ export default function XRay() {
           <Grid item>
             <TimeSeriesLineGraph
               query={{ ...router.query, breakdown: "all", resolution: "day" }}
+              size="small"
             />
           </Grid>
         </Grid>

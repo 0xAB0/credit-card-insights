@@ -74,7 +74,7 @@ export default function Home() {
           Overview
         </Typography>
 
-        <Grid container>
+        <Grid container style={{ height: "70vh" }}>
           <Grid item xs={2}>
             <form onSubmit={handleSubmit}>
               <Grid container direction="column" className={classes.controls}>
@@ -207,9 +207,7 @@ export default function Home() {
           </Grid>
 
           <Grid item xs={10}>
-            <Box display="flex" justifyContent="center">
-              <TimeSeriesLineGraph query={query} />
-            </Box>
+            <TimeSeriesLineGraph query={query} />
           </Grid>
         </Grid>
       </Container>
