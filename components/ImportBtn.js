@@ -21,6 +21,7 @@ const ImportBtn = () => {
     e.preventDefault();
 
     const file = e.target.file.files[0];
+    const name = file.name.slice(0, -4);
 
     var reader = new FileReader();
 
@@ -36,10 +37,7 @@ const ImportBtn = () => {
       };
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/import/?name=${file.name.slice(
-          0,
-          -4
-        )}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/import/?name=${name}`,
         options
       );
 
@@ -49,7 +47,7 @@ const ImportBtn = () => {
         setOpen(false);
         router.push({
           pathname: "/import",
-          query: { id: data.id },
+          query: { id: data.id, name },
         });
       }
     };

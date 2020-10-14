@@ -61,7 +61,15 @@ export default function Import() {
     );
 
     if (res.data.status === "ok") {
-      alert("commit ok");
+      const query = {
+        type: "statement",
+        statement: router.query.name,
+      };
+
+      router.push({
+        pathname: "/xray",
+        query,
+      });
     }
   };
 
