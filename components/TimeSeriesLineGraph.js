@@ -10,6 +10,16 @@ import {
   Line,
 } from "recharts";
 
+const strokeColors = [
+  "#7986cb",
+  "#a5d6a7",
+  "#ffc658",
+  "#f48fb1",
+  "#ce93d8",
+  "#80deea",
+  "#bcaaa4",
+];
+
 const fetchTimeSeriesData = async (
   type,
   statement,
@@ -26,46 +36,32 @@ const fetchTimeSeriesData = async (
     }&breakdown=${breakdown}&resolution=${resolution}`
   );
 
-  const allData = res.data.series[0].dataPoints.map(
-    (point) =>
-      (point = {
-        ...point,
-        timestamp: new Date(point.time).getTime(),
-        all: point.value,
-      })
-  );
-  const paymentData = res.data.series[1].dataPoints.map(
-    (point) =>
-      (point = {
-        ...point,
-        timestamp: new Date(point.time).getTime(),
-        payment: point.value,
-      })
-  );
+  let arr = [];
 
-  let merged = [];
-  let i = 0;
-  let j = 0;
+  res.data.series.map((series) =>
+    series.dataPoints.map((point) => {
+      const label = series.label;
+      const timestamp = new Date(point.time).getTime();
 
-  while (i < allData.length) {
-    while (j < paymentData.length) {
-      if (allData[i].timestamp === paymentData[j].timestamp) {
-        merged.push({ ...allData[i], payment: paymentData[j].payment });
-        i++;
-        j++;
-      } else if (allData[i].timestamp > paymentData[j].timestamp) {
-        merged.push(paymentData[j]);
-        j++;
+      if (arr.some((obj) => obj.timestamp === timestamp)) {
+        arr = arr.map((obj) =>
+          obj.timestamp === timestamp ? { ...obj, [label]: point.value } : obj
+        );
       } else {
-        merged.push(allData[i]);
-        i++;
+        arr.push({
+          time: point.time,
+          timestamp: new Date(point.time).getTime(),
+          [label]: point.value,
+        });
       }
-    }
-    merged.push(allData[i]);
-    i++;
-  }
+    })
+  );
 
-  return merged;
+  const sorted = arr.sort((a, b) => a.timestamp - b.timestamp);
+
+  const labels = res.data.series.map((series) => series.label);
+
+  return { sorted, labels };
 };
 
 const TimeSeriesLineGraph = ({ query }) => {
@@ -81,32 +77,30 @@ const TimeSeriesLineGraph = ({ query }) => {
   if (error) return "An error has occurred: " + error.message;
 
   return (
-    <LineChart
-      width={730}
-      height={300}
-      data={data}
-      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-    >
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="time" />
-      <YAxis />
-      <Tooltip />
-      <Legend />
-      <Line
-        connectNulls
-        type="monotone"
-        dataKey="all"
-        name="All"
-        stroke="#8884d8"
-      />
-      <Line
-        connectNulls
-        type="monotone"
-        dataKey="payment"
-        name="Payment"
-        stroke="#82ca9d"
-      />
-    </LineChart>
+    !isLoading && (
+      <LineChart
+        width={730}
+        height={300}
+        data={data.sorted}
+        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+      >
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="time" />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        {data.labels.map((label, index) => (
+          <Line
+            key={index}
+            connectNulls
+            type="monotone"
+            dataKey={label}
+            name={label}
+            stroke={strokeColors[index % strokeColors.length]}
+          />
+        ))}
+      </LineChart>
+    )
   );
 };
 
