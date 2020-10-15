@@ -75,6 +75,7 @@ export default function Home() {
         </Typography>
 
         <Grid container style={{ height: "70vh" }}>
+          {/* form to change query params */}
           <Grid item xs={2}>
             <form onSubmit={handleSubmit}>
               <Grid container direction="column" className={classes.controls}>

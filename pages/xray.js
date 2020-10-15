@@ -5,7 +5,7 @@ import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 
-import TopFiveTable from "../components/TopFiveTable";
+import SummaryTable from "../components/SummaryTable";
 import DetailsTable from "../components/DetailsTable";
 import PieGraph from "../components/PieGraph";
 import TimeSeriesLineGraph from "../components/TimeSeriesLineGraph";
@@ -24,6 +24,8 @@ export default function XRay() {
 
   const { type, statement, start, end } = router.query;
 
+  const summaryList = ["category", "individual", "frequent"];
+
   return (
     <Container className={classes.root}>
       <Typography variant="h4" gutterBottom>
@@ -36,33 +38,17 @@ export default function XRay() {
           Summary
         </Typography>
         <Grid container spacing={3} justify="space-evenly">
-          <Grid item>
-            <TopFiveTable
-              name="category"
-              type={type}
-              statement={statement}
-              start={start}
-              end={end}
-            />
-          </Grid>
-          <Grid item>
-            <TopFiveTable
-              name="individual"
-              type={type}
-              statement={statement}
-              start={start}
-              end={end}
-            />
-          </Grid>
-          <Grid item>
-            <TopFiveTable
-              name="frequent"
-              type={type}
-              statement={statement}
-              start={start}
-              end={end}
-            />
-          </Grid>
+          {summaryList.map((name, index) => (
+            <Grid item key={index}>
+              <SummaryTable
+                name={name}
+                type={type}
+                statement={statement}
+                start={start}
+                end={end}
+              />
+            </Grid>
+          ))}
         </Grid>
       </Container>
 

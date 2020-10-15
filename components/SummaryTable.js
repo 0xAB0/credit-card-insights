@@ -21,7 +21,7 @@ const fetchSummaryData = async (name, type, statement, start, end) => {
   return res.data;
 };
 
-const TopFiveTable = ({ name, type, statement, start, end }) => {
+const SummaryTable = ({ name, type, statement, start, end }) => {
   const { data: rows, error, isLoading } = useQuery(
     [name, type, statement, start, end],
     fetchSummaryData
@@ -36,6 +36,7 @@ const TopFiveTable = ({ name, type, statement, start, end }) => {
       <Typography variant="h6" gutterBottom>
         {name}
       </Typography>
+
       <TableContainer component={Paper} style={{ width: 250 }}>
         <Table size="small">
           <TableHead>
@@ -58,4 +59,4 @@ const TopFiveTable = ({ name, type, statement, start, end }) => {
   );
 };
 
-export default TopFiveTable;
+export default SummaryTable;

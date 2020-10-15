@@ -11,15 +11,7 @@ import {
   Line,
 } from "recharts";
 
-const strokeColors = [
-  "#7986cb",
-  "#a5d6a7",
-  "#ffc658",
-  "#f48fb1",
-  "#ce93d8",
-  "#80deea",
-  "#bcaaa4",
-];
+import { colors } from "../constants";
 
 const fetchTimeSeriesData = async (
   type,
@@ -37,6 +29,7 @@ const fetchTimeSeriesData = async (
     }&breakdown=${breakdown}&resolution=${resolution}`
   );
 
+  // re-structure data
   let arr = [];
 
   res.data.series.map((series) =>
@@ -58,6 +51,7 @@ const fetchTimeSeriesData = async (
     })
   );
 
+  // sort data by timestamp in ascending order
   const sorted = arr.sort((a, b) => a.timestamp - b.timestamp);
 
   const labels = res.data.series.map((series) => series.label);
@@ -99,7 +93,7 @@ const TimeSeriesLineGraph = ({ query, size }) => {
               type="monotone"
               dataKey={label}
               name={label}
-              stroke={strokeColors[index % strokeColors.length]}
+              stroke={colors[index % colors.length]}
             />
           ))}
         </LineChart>
